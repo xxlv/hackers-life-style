@@ -14,7 +14,7 @@ my_blog_path="/work/blog"
 git_repository="git@github.com:xxlv/okuer.git"
 
 # jekyll's default branch
-git_branch="gh_pages"
+git_branch="gh-pages"
 
 # email config here
 sender=os.environ.get('sender')
@@ -93,8 +93,8 @@ def do_publish(file):
 
     res=os.popen(shell).read()
 
-    
-    email_to(my_notify_email,res)
+    content="%s \n  %s"%(shell,res) 
+    email_to(my_notify_email,content)
 
     return
 
