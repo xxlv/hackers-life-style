@@ -87,9 +87,9 @@ def do_publish(file):
     cp %s . &&
     git add %s &&
     git commit -m "%s" &&
-    git status
+    git push origin %s
 
-    """ %(tmp+"/"+category,file,new_file,new_file,file_name,"Add new article "+file_name)
+    """ %(tmp+"/"+category,file,new_file,new_file,file_name,"Add new article "+file_name,git_branch)
 
     res=os.popen(shell).read()
 
@@ -127,7 +127,7 @@ Subject: %s
         server=smtplib.SMTP_SSL(HOST,PORT)
         server.login(FROM,PASS)
         server.sendmail(FROM,TO,message)
-        server.ehlo()
+        server.quit()
        
     except Exception as e:
         print("Email error")
