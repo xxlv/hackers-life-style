@@ -1,0 +1,2 @@
+# hackers-life-style
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6dd89c0df8cd417888b0c312fa71efca)](https://www.codacy.com/app/lvxiang119/hackers-life-style?utm_source=github.com&utm_medium=referral&utm_content=xxlv/hackers-life-style&utm_campaign=badger)
