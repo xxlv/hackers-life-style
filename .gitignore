@@ -40,3 +40,6 @@ flycheck_*.el
 
 # projectiles files
 .projectile
+
+/__pycache__
+/utils/__pycache__
