@@ -4,7 +4,6 @@ from urllib.request import urlopen
 import hashlib
 import os
 from os.path import expanduser
-from shutil import copyfile
 
 HOME = expanduser("~")
 DOWNLOAD_CACHE_DIR='{}/Downloads/downloadHelper'.format(HOME)
@@ -34,7 +33,10 @@ def _download_file(url,target):
         file_size=0
 
     if file_size <=0:
+        print("file size <= 0")
         exit(-1)
+
+    print("file size is {}".format(file_size))
 
     file_hash=hashlib.md5(url.encode('utf-8')).hexdigest()
     cache_target="{}/{}".format(DOWNLOAD_CACHE_DIR,file_hash)
@@ -44,7 +46,16 @@ def _download_file(url,target):
 
     file_size_dl = int(_load_cache_INFO(cache_target_INFO))
 
-    if not file_size_dl == file_size:
+    if(file_size_dl >0 and file_size_dl < file_size):
+        print("从 {} 开始继续下载".format(file_size_dl))
+
+    if(file_size_dl > file_size):
+        _update_cache_INFO(cache_target_INFO,0)
+        file_size_dl=0
+    if(file_size_dl == file_size):
+        print("Load from cache ")
+
+    if  file_size_dl < file_size:
         block_sz = BLOCK_SIZE
         f = open(cache_target_FILE, 'wb')
 
@@ -57,16 +68,26 @@ def _download_file(url,target):
             _update_cache_INFO(cache_target_INFO,file_size_dl)
             _print_process(file_size_dl,file_size)
         f.close()
+    else:
+        pass
 
     _fast_copyfile(cache_target_FILE,target)
 
 def _fast_copyfile(src,target):
+    print("CP file from {} to {}".format(src,target))
     # TODO fast cp here
     if os.path.isfile(target):
         print("File {} exists ".format(target))
         exit(-1)
 
-    return copyfile(src,target)
+    cp_shell="""
+        cp {} {}
+    """.format(src,target)
+    os.system(cp_shell)
+
+
+
+
 
 def _print_process(file_size_dl,file_size):
 
