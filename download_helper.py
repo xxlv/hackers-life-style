@@ -58,10 +58,10 @@ def _download_file(url,target):
             _print_process(file_size_dl,file_size)
         f.close()
 
-    _copyfile(cache_target_FILE,target)
+    _fast_copyfile(cache_target_FILE,target)
 
-def _copyfile(src,target):
-    # TODO fast cp here 
+def _fast_copyfile(src,target):
+    # TODO fast cp here
     if os.path.isfile(target):
         print("File {} exists ".format(target))
         exit(-1)
