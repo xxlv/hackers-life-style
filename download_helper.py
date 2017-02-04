@@ -1,4 +1,6 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
+
+# deprecated
 
 from urllib.request import urlopen
 import hashlib
@@ -15,8 +17,14 @@ BLOCK_SIZE=1024
 """
 
 def download(url,path='.'):
-    _download_file(url,path)
-
+    if _is_local_url(url):
+        _fast_copyfile(url,path)
+    else:
+        if(_is_valid_url(url)):
+            _download_file(url,path)
+        else:
+            print("Url is not valid")
+            exit(-1)
 
 def _download_file(url,target):
 
@@ -31,6 +39,7 @@ def _download_file(url,target):
         file_size = int(meta.get_all('Content-Length')[0])
     else:
         file_size=0
+
 
     if file_size <=0:
         print("file size <= 0")
@@ -73,6 +82,7 @@ def _download_file(url,target):
 
     _fast_copyfile(cache_target_FILE,target)
 
+
 def _fast_copyfile(src,target):
     print("CP file from {} to {}".format(src,target))
     # TODO fast cp here
@@ -84,10 +94,6 @@ def _fast_copyfile(src,target):
         cp {} {}
     """.format(src,target)
     os.system(cp_shell)
-
-
-
-
 
 def _print_process(file_size_dl,file_size):
 
@@ -110,10 +116,12 @@ def _init_cache_INFO_ENV(cache_target,cache_target_INFO):
     return True
 
 def _update_cache_INFO(cache_target_INFO,offset):
+
     with open(cache_target_INFO,'w+') as f:
         f.write(str(offset))
 
 def _load_cache_INFO(cache_target_INFO):
+
     with open(cache_target_INFO,'r') as f:
         offset=f.read()
     if not offset:
@@ -124,13 +132,14 @@ def _load_cache_INFO(cache_target_INFO):
     return offset
 
 def _is_local_url(url):
-    # TODO
-    return True
+    if os.path.exists(url):
+        return True
+
+    return False
 
 def _is_valid_url(url):
     # TODO
     return True
-
 
 # MAIN
 if __name__=='__main__':
