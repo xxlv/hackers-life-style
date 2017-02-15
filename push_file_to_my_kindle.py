@@ -13,6 +13,7 @@ from email.utils import COMMASPACE,formatdate
 from email import encoders
 from email.mime.base import MIMEBase
 from email.utils import make_msgid
+from urllib.request import urlopen
 
 rec_email=os.environ.get('kindle_email')  # kindle reciver email
 sender=os.environ.get('kindle_sender')
@@ -39,17 +40,27 @@ def send_email(send_from,to,subject,content,files):
     msg['Date']=formatdate(localtime=True)
     msg['Subject']=subject
     msg['Message-Id']=make_msgid()
-    
+
     msg.attach(MIMEText(content))
 
     for f in files or []:
-        with open(f,'rb') as fil:
-            part = MIMEBase('application', "octet-stream")
-            part.set_payload(fil.read())
 
-            encoders.encode_base64(part)
-            part.add_header('Content-Disposition', 'attachment; filename="{0}"'.format(os.path.basename(f)))
-            msg.attach(part)
+        if _is_local_file(f):
+            with open(f,'rb') as fil:
+                part = MIMEBase('application', "octet-stream")
+                part.set_payload(fil.read())
+
+                encoders.encode_base64(part)
+                part.add_header('Content-Disposition', 'attachment; filename="{0}"'.format(os.path.basename(f)))
+                msg.attach(part)
+        else:
+            with urlopen(f) as fil:
+                part = MIMEBase('application', "octet-stream")
+                part.set_payload(fil.read())
+
+                encoders.encode_base64(part)
+                part.add_header('Content-Disposition', 'attachment; filename="{0}"'.format(os.path.basename(f)))
+                msg.attach(part)
 
 
     try:
@@ -64,9 +75,19 @@ def send_email(send_from,to,subject,content,files):
         traceback.print_exc()
 
 
+def _is_local_file(file):
+    """
+    simple check file is local or remote
+    """
+    # TODO use re module 
+    if(file[0:4]=='http'):
+        return False
+    else:
+        return True
+
 
 if __name__=='__main__':
- 
+
     files=sys.argv
     files=files[1:]
     push_file_to_my_kindle(files)
