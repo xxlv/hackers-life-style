@@ -23,10 +23,11 @@ sender_pass=os.environ.get('kindle_sender_mail_pass')
 
 
 def push_file_to_my_kindle(files):
-    """
-        give files then push them to my kindle
 
     """
+    push files to my kindle
+    """
+
     subject="Send to kindle"
     content="Auto send to kindle"
     send_email(sender,rec_email,subject,content,files)
@@ -61,8 +62,6 @@ def send_email(send_from,to,subject,content,files):
                 encoders.encode_base64(part)
                 part.add_header('Content-Disposition', 'attachment; filename="{0}"'.format(os.path.basename(f)))
                 msg.attach(part)
-
-
     try:
         print("%s Send a mail to %s " % (send_from,to))
 
@@ -76,10 +75,12 @@ def send_email(send_from,to,subject,content,files):
 
 
 def _is_local_file(file):
+
     """
     simple check file is local or remote
     """
-    # TODO use re module 
+
+    # TODO use re module
     if(file[0:4]=='http'):
         return False
     else:
