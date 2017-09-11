@@ -4,13 +4,14 @@
 import os
 import re
 import time
+import  datetime
 
 import smtplib
 
 # my local blog path
 my_blog_path="/work/blog"
 
-# my git repos 
+# my git repos
 git_repository="git@github.com:xxlv/okuer.git"
 
 # jekyll's default branch
@@ -27,9 +28,12 @@ my_notify_email=os.environ.get('my_notify_email','lvxiang119@gmail.com')
 def publish_my_blog():
     """
     look for publish-abled file and do publish
-    
+
     """
-    
+    now=datetime.datetime.now()
+    year=now.year
+
+
     # check my blog path files
     for root,dirs,files in os.walk(my_blog_path):
 
@@ -50,18 +54,17 @@ def publish_my_blog():
 
 def do_publish(file):
     """
-    check file and mv to git repositry and  push it 
-    
+    check file and mv to git repositry and  push it
+
     """
-    
+
     new_file=file
     new_file=re.sub(r'(!)','',new_file)
 
     file_name=os.path.basename(new_file)
     gb=git_branch
-    
     # parse category from file
-    category="2016"
+    category=str(year)
 
     # git clone
     # cp file to git repos
@@ -71,16 +74,16 @@ def do_publish(file):
     tmp='/tmp/okuer/_posts'
 
     clone_shell= """
-    
+
     git clone %s %s
-    
+
     """ %(git_repository,"/tmp/okuer")
 
     if (not os.path.isdir(tmp)):
 
         res=os.popen(clone_shell).read()
         print(res)
-        
+
     shell= """
     cd %s &&
     mv %s %s &&
@@ -93,7 +96,7 @@ def do_publish(file):
 
     res=os.popen(shell).read()
 
-    content="%s \n  %s"%(shell,res) 
+    content="%s \n  %s"%(shell,res)
     email_to(my_notify_email,content)
 
     return
@@ -103,8 +106,8 @@ def do_publish(file):
 
 def email_to(email,content):
     """
-    simple email tool 
-    
+    simple email tool
+
     """
     # todo
     print("Send a email to %s"% email)
@@ -115,24 +118,24 @@ def email_to(email,content):
     PORT=sender_port
     TEXT=content
     PASS=sender_pass
-    
+
     message = """\
 From: %s
 To: %s
 Subject: %s
 
  %s""" % (FROM, ", ".join(TO), SUBJECT, TEXT)
-    
+
     try:
         server=smtplib.SMTP_SSL(HOST,PORT)
         server.login(FROM,PASS)
         server.sendmail(FROM,TO,message)
         server.quit()
-       
+
     except Exception as e:
         print("Email error")
 
-    return                     
+    return
 
 
 
